@@ -142,15 +142,17 @@
             transition: all 0.3s;
         }
 
-        .connect-btn:hover {
+        .connect-btn:hover:not(:disabled) {
             background: #dbb55a;
             transform: scale(1.02);
         }
 
         .connect-btn:disabled {
-            opacity: 0.5;
+            opacity: 0.6;
             cursor: not-allowed;
             transform: none;
+            background: #6a5f4a;
+            color: #b8a582;
         }
 
         #chat-screen {
@@ -200,7 +202,7 @@
             font-size: 0.8rem;
         }
 
-        .chat-header .close-ticket-btn:hover {
+        .chat-header .close-ticket-btn:hover:not(:disabled) {
             background: #f44336;
             color: #0b0a0a;
         }
@@ -365,13 +367,34 @@
             font-size: 0.95rem;
         }
 
-        .send-btn:hover {
+        .send-btn:hover:not(:disabled) {
             background: #dbb55a;
         }
 
         .send-btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+        }
+
+        .maintenance-banner {
+            background: #1f1a0f;
+            border: 2px solid #c9a84c;
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            margin: 1rem 0;
+            text-align: center;
+            color: #e8c45a;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
 
         @media (max-width: 700px) {
@@ -422,13 +445,18 @@
     <div class="support-container">
         <div class="header">
             <h1>🎫 Support ValoriaRP</h1>
-            <a href="/" class="back-btn">← Retour</a>
+            <a href="/ValoriaRP/" class="back-btn">← Retour</a>
         </div>
 
         <div id="login-screen">
             <div class="icon">🎮</div>
             <h2>Contacter le support</h2>
             <p class="subtitle">Un membre du staff vous répondra dans les plus brefs délais</p>
+
+            <!-- BANNIÈRE MAINTENANCE -->
+            <div class="maintenance-banner">
+                🔧 Maintenance en cours · Tickets temporairement désactivés
+            </div>
 
             <div class="info-box">
                 <p>📌 <span class="highlight">Comment ça fonctionne ?</span></p>
@@ -443,10 +471,11 @@
                 id="username-input" 
                 placeholder="Entrez votre pseudo Discord" 
                 maxlength="32"
+                disabled
             >
             <br>
-            <button class="connect-btn" id="connect-btn">
-                📨 Contacter le support
+            <button class="connect-btn" id="connect-btn" disabled>
+                🔧 Maintenance en cours
             </button>
             <p style="color: #6a5f4a; font-size: 0.8rem; margin-top: 1rem;">
                 🔒 Ticket privé · Réponse rapide garantie
@@ -478,16 +507,7 @@
 
     <script>
         // ===== CONFIGURATION =====
-        // ⚠️ CHOISIS L'UNE DES OPTIONS CI-DESSOUS ⚠️
-        
-        // OPTION 1 : HTTP direct (si CORS désactivé dans le navigateur)
         const BOT_API_URL = "https://bore.pub:40662/api";
-        
-        // OPTION 2 : HTTPS avec proxy (si tu n'as pas de certificat SSL)
-        // const BOT_API_URL = "https://cors-anywhere.herokuapp.com/http://141.11.5.156:25785/api";
-        
-        // OPTION 3 : HTTPS avec Cloudflare Tunnel (si tu as installé cloudflared)
-        // const BOT_API_URL = "https://xxx.trycloudflare.com/api";
         
         // ===== VARIABLES =====
         let currentUser = null;
@@ -508,11 +528,36 @@
         const ticketIdDisplay = document.getElementById('ticket-id-display');
         const closeTicketBtn = document.getElementById('close-ticket-btn');
 
+        // ===== VÉRIFIER SI UN TICKET EXISTE =====
+        function checkExistingTicket() {
+            const saved = localStorage.getItem('valoria_ticket');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    const timeElapsed = Date.now() - data.createdAt;
+                    if (timeElapsed > 86400000) {
+                        localStorage.removeItem('valoria_ticket');
+                        return null;
+                    }
+                    return data;
+                } catch {
+                    localStorage.removeItem('valoria_ticket');
+                    return null;
+                }
+            }
+            return null;
+        }
+
+        // ===== LES TICKETS SONT BLOQUÉS (MAINTENANCE) =====
+        console.log("🔧 Mode maintenance activé - Tickets désactivés");
+        connectBtn.disabled = true;
+        connectBtn.textContent = '🔧 Maintenance en cours';
+        usernameInput.disabled = true;
+
         // ===== ÉVÉNEMENTS =====
-        connectBtn.addEventListener('click', connectUser);
-        usernameInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') connectUser();
-        });
+        // Les événements sont désactivés pendant la maintenance
+        // connectBtn.addEventListener('click', connectUser);
+        // usernameInput.addEventListener('keypress', function(e) { if (e.key === 'Enter') connectUser(); });
         sendBtn.addEventListener('click', sendMessage);
         messageInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -522,71 +567,21 @@
         });
         closeTicketBtn.addEventListener('click', closeTicket);
 
-        // Test de connexion au démarrage
+        // ===== TEST DE CONNEXION =====
         console.log("🔍 Test de connexion à l'API:", BOT_API_URL);
         fetch(BOT_API_URL + '/health')
             .then(res => res.json())
             .then(data => {
                 console.log("✅ API connectée :", data);
-                connectBtn.disabled = false;
-                connectBtn.textContent = '📨 Contacter le support';
             })
             .catch(err => {
                 console.error("❌ API inaccessible :", err);
-                connectBtn.disabled = true;
-                connectBtn.textContent = '⚠️ Bot hors ligne';
-                alert("❌ Impossible de contacter le serveur.\nVérifiez que le bot est en ligne.\n\nURL utilisée : " + BOT_API_URL);
             });
 
-        // ===== CONNEXION =====
+        // ===== CONNEXION (DÉSACTIVÉE) =====
         function connectUser() {
-            const username = usernameInput.value.trim();
-            if (!username) {
-                usernameInput.classList.add('error');
-                usernameInput.placeholder = '⚠️ Entrez votre pseudo !';
-                setTimeout(() => {
-                    usernameInput.classList.remove('error');
-                    usernameInput.placeholder = 'Entrez votre pseudo Discord';
-                }, 2000);
-                return;
-            }
-
-            currentUser = username;
-            connectBtn.disabled = true;
-            connectBtn.textContent = '⏳ Création du ticket...';
-
-            fetch(`${BOT_API_URL}/create_ticket`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: username })
-            })
-            .then(res => {
-                if (!res.ok) throw new Error('Erreur serveur');
-                return res.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    currentTicket = data.ticket_id;
-                    ticketNumber = parseInt(currentTicket.split('-')[1]);
-                    enterChat();
-                    loadMessages();
-                    messageInterval = setInterval(loadMessages, 3000);
-                    
-                    const url = new URL(window.location);
-                    url.searchParams.set('ticket', ticketNumber);
-                    window.history.pushState({}, '', url);
-                } else {
-                    alert('❌ Erreur lors de la création du ticket.');
-                }
-            })
-            .catch(err => {
-                console.error('Erreur:', err);
-                alert('❌ Impossible de contacter le serveur.\nVérifiez que le bot est en ligne.');
-            })
-            .finally(() => {
-                connectBtn.disabled = false;
-                connectBtn.textContent = '📨 Contacter le support';
-            });
+            alert("🔧 Les tickets sont temporairement désactivés pour maintenance.\nRevenez plus tard !");
+            return;
         }
 
         // ===== ENTRER DANS LE CHAT =====
@@ -598,6 +593,13 @@
             messageInput.disabled = false;
             sendBtn.disabled = false;
             messageInput.focus();
+
+            localStorage.setItem('valoria_ticket', JSON.stringify({
+                ticket_id: currentTicket,
+                username: currentUser,
+                ticket_number: ticketNumber,
+                createdAt: Date.now()
+            }));
         }
 
         // ===== CHARGER LES MESSAGES =====
@@ -740,6 +742,7 @@
                 closeTicketBtn.textContent = '✅ Fermé';
                 closeTicketBtn.style.borderColor = '#4a8a4a';
                 closeTicketBtn.style.color = '#4a8a4a';
+                localStorage.removeItem('valoria_ticket');
                 
                 if (messageInterval) {
                     clearInterval(messageInterval);
