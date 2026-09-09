@@ -4,38 +4,765 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Support - ValoriaRP</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: #0b0a0a;
+            color: #f5f0e6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .support-container {
+            background: #14110e;
+            border: 1px solid #3f3423;
+            border-radius: 28px;
+            padding: 2rem;
+            max-width: 800px;
+            width: 100%;
+            max-height: 95vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #3f3423;
+        }
+
+        .header h1 {
+            color: #e8d6a8;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-btn {
+            color: #7aa8d6;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 1px solid #7aa8d6;
+            border-radius: 10px;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .back-btn:hover {
+            background: #7aa8d6;
+            color: #0b0a0a;
+        }
+
+        /* ===== ÉCRAN DE CONNEXION ===== */
+        #login-screen {
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        #login-screen .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        #login-screen h2 {
+            color: #e8d6a8;
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+        }
+
+        #login-screen .subtitle {
+            color: #b8a582;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        #login-screen .info-box {
+            background: #1f1b16;
+            border: 1px solid #3f3423;
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            text-align: left;
+        }
+
+        #login-screen .info-box p {
+            color: #b8a582;
+            font-size: 0.95rem;
+            margin: 0.3rem 0;
+        }
+
+        #login-screen .info-box .highlight {
+            color: #e8c45a;
+        }
+
+        #login-screen input {
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            border: 1px solid #3f3423;
+            background: #1f1b16;
+            color: #f5f0e6;
+            width: 80%;
+            max-width: 350px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        #login-screen input:focus {
+            outline: none;
+            border-color: #c9a84c;
+        }
+
+        #login-screen input.error {
+            border-color: #f44336;
+        }
+
+        .connect-btn {
+            margin-top: 1.5rem;
+            padding: 0.9rem 3rem;
+            border: none;
+            border-radius: 12px;
+            background: #c9a84c;
+            color: #0b0a0a;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .connect-btn:hover {
+            background: #dbb55a;
+            transform: scale(1.02);
+        }
+
+        .connect-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ===== CHAT ===== */
+        #chat-screen {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            min-height: 400px;
+        }
+
+        .chat-status {
+            background: #1f2a1f;
+            border: 1px solid #4a8a4a;
+            border-radius: 10px;
+            padding: 0.8rem 1rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #8bc34a;
+        }
+
+        .chat-status .ticket-id {
+            color: #e8c45a;
+            font-weight: 600;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            margin-bottom: 0.5rem;
+        }
+
+        .chat-header .user-info {
+            color: #b8a582;
+            font-size: 0.9rem;
+        }
+
+        .chat-header .close-ticket-btn {
+            padding: 0.4rem 1rem;
+            border: 1px solid #f44336;
+            border-radius: 8px;
+            background: transparent;
+            color: #f44336;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.8rem;
+        }
+
+        .chat-header .close-ticket-btn:hover {
+            background: #f44336;
+            color: #0b0a0a;
+        }
+
+        .chat-header .close-ticket-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            background: #0b0a0a;
+            border-radius: 12px;
+            border: 1px solid #2a241e;
+            margin-bottom: 1rem;
+            min-height: 300px;
+            max-height: 400px;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: #1f1b16;
+            border-radius: 3px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #c9a84c;
+            border-radius: 3px;
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 1rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            margin-right: 0.8rem;
+        }
+
+        .message-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .message-content {
+            flex: 1;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.2rem;
+            flex-wrap: wrap;
+        }
+
+        .message-header .username {
+            font-weight: 600;
+            color: #e8d6a8;
+            font-size: 0.95rem;
+        }
+
+        .message-header .timestamp {
+            font-size: 0.7rem;
+            color: #6a5f4a;
+        }
+
+        .message-header .staff-badge {
+            background: #c9a84c;
+            color: #0b0a0a;
+            font-size: 0.6rem;
+            padding: 0.1rem 0.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .message-text {
+            color: #d6ccbb;
+            word-wrap: break-word;
+            line-height: 1.4;
+            font-size: 0.95rem;
+        }
+
+        .message.own .message-content {
+            background: #1f2a1f;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            border-left: 3px solid #4a8a4a;
+        }
+
+        .message.staff .message-content {
+            background: #1f1a0f;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            border-left: 3px solid #c9a84c;
+        }
+
+        .message.system {
+            justify-content: center;
+        }
+
+        .system-msg {
+            background: #2a241e;
+            padding: 0.4rem 1.5rem;
+            border-radius: 20px;
+            color: #b8a582;
+            font-style: italic;
+            font-size: 0.85rem;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            border: 1px solid #3f3423;
+            background: #1f1b16;
+            color: #f5f0e6;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .chat-input input:focus {
+            outline: none;
+            border-color: #c9a84c;
+        }
+
+        .chat-input input:disabled {
+            opacity: 0.5;
+        }
+
+        .send-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            background: #c9a84c;
+            color: #0b0a0a;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .send-btn:hover {
+            background: #dbb55a;
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 700px) {
+            .support-container {
+                padding: 1.5rem;
+                max-height: 98vh;
+            }
+
+            .header h1 {
+                font-size: 1.2rem;
+            }
+
+            #login-screen input {
+                width: 90%;
+            }
+
+            .chat-messages {
+                min-height: 200px;
+                max-height: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .support-container {
+                padding: 1rem;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .chat-input {
+                flex-direction: column;
+            }
+
+            .chat-input input {
+                padding: 0.6rem 0.8rem;
+            }
+
+            .send-btn {
+                padding: 0.6rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="support-container">
+        <!-- HEADER -->
         <div class="header">
-            <h1>🆘 Support ValoriaRP</h1>
+            <h1>🎫 Support ValoriaRP</h1>
             <a href="/" class="back-btn">← Retour</a>
         </div>
-        
+
+        <!-- ÉCRAN DE CONNEXION -->
         <div id="login-screen">
-            <h2>👤 Se connecter</h2>
-            <p>Entrez votre pseudo pour créer un ticket</p>
-            <input type="text" id="username-input" placeholder="Votre pseudo">
+            <div class="icon">🎮</div>
+            <h2>Contacter le support</h2>
+            <p class="subtitle">Un membre du staff vous répondra dans les plus brefs délais</p>
+
+            <div class="info-box">
+                <p>📌 <span class="highlight">Comment ça fonctionne ?</span></p>
+                <p>1️⃣ Entrez votre pseudo Discord</p>
+                <p>2️⃣ Un ticket privé sera créé sur Discord</p>
+                <p>3️⃣ Échangez avec le staff en temps réel</p>
+                <p>4️⃣ Fermez le ticket quand vous avez terminé</p>
+            </div>
+
+            <input 
+                type="text" 
+                id="username-input" 
+                placeholder="Entrez votre pseudo Discord" 
+                maxlength="32"
+            >
             <br>
-            <button id="connect-btn">Se connecter</button>
+            <button class="connect-btn" id="connect-btn">
+                📨 Contacter le support
+            </button>
+            <p style="color: #6a5f4a; font-size: 0.8rem; margin-top: 1rem;">
+                🔒 Ticket privé · Réponse rapide garantie
+            </p>
         </div>
-        
-        <div id="chat-screen" style="display:none;">
+
+        <!-- CHAT -->
+        <div id="chat-screen">
+            <div class="chat-status">
+                🟢 Support en ligne · Ticket <span class="ticket-id" id="ticket-id-display">#001</span>
+            </div>
             <div class="chat-header">
-                <span id="ticket-info">🎫 Support</span>
-                <span id="user-info"></span>
+                <span class="user-info" id="user-info">👤 Utilisateur</span>
+                <button class="close-ticket-btn" id="close-ticket-btn">🔒 Fermer</button>
             </div>
             <div id="messages" class="chat-messages">
                 <!-- Messages -->
             </div>
             <div class="chat-input">
-                <input type="text" id="message-input" placeholder="Écrivez votre message...">
-                <button id="send-btn">Envoyer</button>
+                <input 
+                    type="text" 
+                    id="message-input" 
+                    placeholder="Écrivez votre message..." 
+                    maxlength="500"
+                    disabled
+                >
+                <button class="send-btn" id="send-btn" disabled>Envoyer</button>
             </div>
         </div>
     </div>
-    
-    <script src="support.js"></script>
+
+    <script>
+        // ===== CONFIGURATION =====
+        // À remplacer par l'URL de ton bot sur ecloud
+        // Exemple: "https://mon-bot.ecloud.fr:5000/api"
+        const BOT_API_URL = "http://localhost:5000/api";
+        
+        // ===== VARIABLES =====
+        let currentUser = null;
+        let currentTicket = null;
+        let ticketNumber = null;
+        let messageInterval = null;
+        let isClosing = false;
+
+        // ===== DOM =====
+        const loginScreen = document.getElementById('login-screen');
+        const chatScreen = document.getElementById('chat-screen');
+        const usernameInput = document.getElementById('username-input');
+        const connectBtn = document.getElementById('connect-btn');
+        const messagesContainer = document.getElementById('messages');
+        const messageInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-btn');
+        const userInfo = document.getElementById('user-info');
+        const ticketIdDisplay = document.getElementById('ticket-id-display');
+        const closeTicketBtn = document.getElementById('close-ticket-btn');
+
+        // ===== ÉVÉNEMENTS =====
+        connectBtn.addEventListener('click', connectUser);
+        usernameInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') connectUser();
+        });
+        sendBtn.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        closeTicketBtn.addEventListener('click', closeTicket);
+
+        // ===== CONNEXION =====
+        function connectUser() {
+            const username = usernameInput.value.trim();
+            if (!username) {
+                usernameInput.classList.add('error');
+                usernameInput.placeholder = '⚠️ Entrez votre pseudo !';
+                setTimeout(() => {
+                    usernameInput.classList.remove('error');
+                    usernameInput.placeholder = 'Entrez votre pseudo Discord';
+                }, 2000);
+                return;
+            }
+
+            currentUser = username;
+            connectBtn.disabled = true;
+            connectBtn.textContent = '⏳ Création du ticket...';
+
+            fetch(`${BOT_API_URL}/create_ticket`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: username })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Erreur serveur');
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    currentTicket = data.ticket_id;
+                    ticketNumber = parseInt(currentTicket.split('-')[1]);
+                    enterChat();
+                    loadMessages();
+                    messageInterval = setInterval(loadMessages, 3000);
+                    
+                    // Mettre à jour l'URL
+                    const url = new URL(window.location);
+                    url.searchParams.set('ticket', ticketNumber);
+                    window.history.pushState({}, '', url);
+                } else {
+                    alert('❌ Erreur lors de la création du ticket.');
+                }
+            })
+            .catch(err => {
+                console.error('Erreur:', err);
+                alert('❌ Impossible de contacter le serveur.\nVérifiez que le bot est en ligne.');
+            })
+            .finally(() => {
+                connectBtn.disabled = false;
+                connectBtn.textContent = '📨 Contacter le support';
+            });
+        }
+
+        // ===== ENTRER DANS LE CHAT =====
+        function enterChat() {
+            loginScreen.style.display = 'none';
+            chatScreen.style.display = 'flex';
+            userInfo.textContent = `👤 ${currentUser}`;
+            ticketIdDisplay.textContent = `#${String(ticketNumber).padStart(3, '0')}`;
+            messageInput.disabled = false;
+            sendBtn.disabled = false;
+            messageInput.focus();
+        }
+
+        // ===== CHARGER LES MESSAGES =====
+        function loadMessages() {
+            if (!currentTicket || isClosing) return;
+
+            fetch(`${BOT_API_URL}/messages/${currentTicket}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    const currentMessages = messagesContainer.querySelectorAll('.message');
+                    const currentCount = currentMessages.length;
+                    
+                    if (data.length > currentCount) {
+                        const newMessages = data.slice(currentCount);
+                        newMessages.forEach(msg => {
+                            addMessageToChat(msg);
+                        });
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }
+                }
+            })
+            .catch(err => {
+                console.error('Erreur chargement messages:', err);
+            });
+        }
+
+        // ===== AJOUTER UN MESSAGE =====
+        function addMessageToChat(msg) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message';
+            
+            if (msg.is_system) {
+                msgDiv.classList.add('system');
+                msgDiv.innerHTML = `<div class="system-msg">${escapeHtml(msg.message)}</div>`;
+            } else {
+                const isOwn = msg.username === currentUser;
+                const isStaff = msg.is_staff || false;
+                
+                if (isOwn) msgDiv.classList.add('own');
+                if (isStaff) msgDiv.classList.add('staff');
+                
+                const avatar = msg.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${msg.username}`;
+                const time = new Date(msg.timestamp).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                
+                let staffBadge = '';
+                if (isStaff) {
+                    staffBadge = `<span class="staff-badge">⭐ Staff</span>`;
+                }
+                
+                msgDiv.innerHTML = `
+                    <div class="message-avatar">
+                        <img src="${avatar}" alt="avatar" loading="lazy">
+                    </div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="username">${escapeHtml(msg.username)}</span>
+                            <span class="timestamp">${time}</span>
+                            ${staffBadge}
+                        </div>
+                        <div class="message-text">${escapeHtml(msg.message)}</div>
+                    </div>
+                `;
+            }
+            
+            messagesContainer.appendChild(msgDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // ===== ENVOYER UN MESSAGE =====
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message || !currentUser || !currentTicket || isClosing) return;
+            
+            messageInput.value = '';
+            messageInput.disabled = true;
+            sendBtn.disabled = true;
+            
+            const avatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser}`;
+            
+            fetch(`${BOT_API_URL}/send_message`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ticket_id: currentTicket,
+                    username: currentUser,
+                    message: message,
+                    avatar: avatar
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    addMessageToChat({
+                        username: currentUser,
+                        message: message,
+                        timestamp: new Date().toISOString(),
+                        avatar: avatar
+                    });
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }
+                messageInput.disabled = false;
+                sendBtn.disabled = false;
+                messageInput.focus();
+            })
+            .catch(err => {
+                console.error('Erreur envoi:', err);
+                messageInput.disabled = false;
+                sendBtn.disabled = false;
+                alert('❌ Erreur lors de l\'envoi du message.');
+            });
+        }
+
+        // ===== FERMER LE TICKET =====
+        function closeTicket() {
+            if (isClosing) return;
+            
+            if (!confirm('Voulez-vous vraiment fermer ce ticket ?')) return;
+            
+            isClosing = true;
+            messageInput.disabled = true;
+            sendBtn.disabled = true;
+            closeTicketBtn.disabled = true;
+            closeTicketBtn.textContent = '⏳ Fermeture...';
+            
+            fetch(`${BOT_API_URL}/close_ticket`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ticket_id: currentTicket })
+            })
+            .then(() => {
+                addMessageToChat({
+                    username: 'System',
+                    message: '🔒 Ticket fermé. Merci de nous avoir contactés !',
+                    timestamp: new Date().toISOString(),
+                    is_system: true
+                });
+                messageInput.disabled = true;
+                sendBtn.disabled = true;
+                closeTicketBtn.textContent = '✅ Fermé';
+                closeTicketBtn.style.borderColor = '#4a8a4a';
+                closeTicketBtn.style.color = '#4a8a4a';
+                
+                if (messageInterval) {
+                    clearInterval(messageInterval);
+                }
+            })
+            .catch(err => {
+                console.error('Erreur fermeture:', err);
+                alert('❌ Erreur lors de la fermeture du ticket.');
+                isClosing = false;
+                closeTicketBtn.disabled = false;
+                closeTicketBtn.textContent = '🔒 Fermer';
+                messageInput.disabled = false;
+                sendBtn.disabled = false;
+            });
+        }
+
+        // ===== UTILITAIRES =====
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ===== VÉRIFIER SI UN TICKET EST DANS L'URL =====
+        const urlParams = new URLSearchParams(window.location.search);
+        const ticketParam = urlParams.get('ticket');
+        if (ticketParam) {
+            ticketNumber = parseInt(ticketParam);
+            usernameInput.placeholder = 'Entrez votre pseudo pour rejoindre';
+            connectBtn.textContent = '📨 Rejoindre le ticket';
+        }
+
+        // ===== NETTOYER =====
+        window.addEventListener('beforeunload', function() {
+            if (messageInterval) {
+                clearInterval(messageInterval);
+            }
+        });
+    </script>
 </body>
 </html>
