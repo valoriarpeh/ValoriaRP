@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support - ValoriaRP</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="support-container">
+        <div class="header">
+            <h1>🆘 Support ValoriaRP</h1>
+            <a href="/" class="back-btn">← Retour</a>
+        </div>
+        
+        <div id="login-screen">
+            <h2>👤 Se connecter</h2>
+            <p>Entrez votre pseudo pour créer un ticket</p>
+            <input type="text" id="username-input" placeholder="Votre pseudo">
+            <br>
+            <button id="connect-btn">Se connecter</button>
+        </div>
+        
+        <div id="chat-screen" style="display:none;">
+            <div class="chat-header">
+                <span id="ticket-info">🎫 Support</span>
+                <span id="user-info"></span>
+            </div>
+            <div id="messages" class="chat-messages">
+                <!-- Messages -->
+            </div>
+            <div class="chat-input">
+                <input type="text" id="message-input" placeholder="Écrivez votre message...">
+                <button id="send-btn">Envoyer</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="support.js"></script>
+</body>
+</html>
