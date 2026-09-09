@@ -67,7 +67,6 @@
             color: #0b0a0a;
         }
 
-        /* ===== ÉCRAN DE CONNEXION ===== */
         #login-screen {
             text-align: center;
             padding: 2rem 0;
@@ -154,7 +153,6 @@
             transform: none;
         }
 
-        /* ===== CHAT ===== */
         #chat-screen {
             display: none;
             flex: 1;
@@ -376,7 +374,6 @@
             cursor: not-allowed;
         }
 
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 700px) {
             .support-container {
                 padding: 1.5rem;
@@ -423,13 +420,11 @@
 </head>
 <body>
     <div class="support-container">
-        <!-- HEADER -->
         <div class="header">
             <h1>🎫 Support ValoriaRP</h1>
             <a href="/" class="back-btn">← Retour</a>
         </div>
 
-        <!-- ÉCRAN DE CONNEXION -->
         <div id="login-screen">
             <div class="icon">🎮</div>
             <h2>Contacter le support</h2>
@@ -458,7 +453,6 @@
             </p>
         </div>
 
-        <!-- CHAT -->
         <div id="chat-screen">
             <div class="chat-status">
                 🟢 Support en ligne · Ticket <span class="ticket-id" id="ticket-id-display">#001</span>
@@ -468,7 +462,6 @@
                 <button class="close-ticket-btn" id="close-ticket-btn">🔒 Fermer</button>
             </div>
             <div id="messages" class="chat-messages">
-                <!-- Messages -->
             </div>
             <div class="chat-input">
                 <input 
@@ -485,9 +478,7 @@
 
     <script>
         // ===== CONFIGURATION =====
-        // À remplacer par l'URL de ton bot sur ecloud
-        // Exemple: "https://mon-bot.ecloud.fr:5000/api"
-       const BOT_API_URL = "http://141.11.5.156:25785/api";
+        const BOT_API_URL = "http://141.11.5.156:25785/api";
         
         // ===== VARIABLES =====
         let currentUser = null;
@@ -521,6 +512,22 @@
             }
         });
         closeTicketBtn.addEventListener('click', closeTicket);
+
+        // Test de connexion au démarrage
+        console.log("🔍 Test de connexion à l'API:", BOT_API_URL);
+        fetch(BOT_API_URL + '/health')
+            .then(res => res.json())
+            .then(data => {
+                console.log("✅ API connectée :", data);
+                connectBtn.disabled = false;
+                connectBtn.textContent = '📨 Contacter le support';
+            })
+            .catch(err => {
+                console.error("❌ API inaccessible :", err);
+                connectBtn.disabled = true;
+                connectBtn.textContent = '⚠️ Bot hors ligne';
+                alert("❌ Impossible de contacter le serveur.\nVérifiez que le bot est en ligne.\n\nURL utilisée : " + BOT_API_URL);
+            });
 
         // ===== CONNEXION =====
         function connectUser() {
@@ -556,7 +563,6 @@
                     loadMessages();
                     messageInterval = setInterval(loadMessages, 3000);
                     
-                    // Mettre à jour l'URL
                     const url = new URL(window.location);
                     url.searchParams.set('ticket', ticketNumber);
                     window.history.pushState({}, '', url);
@@ -643,126 +649,4 @@
                             <span class="timestamp">${time}</span>
                             ${staffBadge}
                         </div>
-                        <div class="message-text">${escapeHtml(msg.message)}</div>
-                    </div>
-                `;
-            }
-            
-            messagesContainer.appendChild(msgDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-
-        // ===== ENVOYER UN MESSAGE =====
-        function sendMessage() {
-            const message = messageInput.value.trim();
-            if (!message || !currentUser || !currentTicket || isClosing) return;
-            
-            messageInput.value = '';
-            messageInput.disabled = true;
-            sendBtn.disabled = true;
-            
-            const avatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser}`;
-            
-            fetch(`${BOT_API_URL}/send_message`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    ticket_id: currentTicket,
-                    username: currentUser,
-                    message: message,
-                    avatar: avatar
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    addMessageToChat({
-                        username: currentUser,
-                        message: message,
-                        timestamp: new Date().toISOString(),
-                        avatar: avatar
-                    });
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                }
-                messageInput.disabled = false;
-                sendBtn.disabled = false;
-                messageInput.focus();
-            })
-            .catch(err => {
-                console.error('Erreur envoi:', err);
-                messageInput.disabled = false;
-                sendBtn.disabled = false;
-                alert('❌ Erreur lors de l\'envoi du message.');
-            });
-        }
-
-        // ===== FERMER LE TICKET =====
-        function closeTicket() {
-            if (isClosing) return;
-            
-            if (!confirm('Voulez-vous vraiment fermer ce ticket ?')) return;
-            
-            isClosing = true;
-            messageInput.disabled = true;
-            sendBtn.disabled = true;
-            closeTicketBtn.disabled = true;
-            closeTicketBtn.textContent = '⏳ Fermeture...';
-            
-            fetch(`${BOT_API_URL}/close_ticket`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ticket_id: currentTicket })
-            })
-            .then(() => {
-                addMessageToChat({
-                    username: 'System',
-                    message: '🔒 Ticket fermé. Merci de nous avoir contactés !',
-                    timestamp: new Date().toISOString(),
-                    is_system: true
-                });
-                messageInput.disabled = true;
-                sendBtn.disabled = true;
-                closeTicketBtn.textContent = '✅ Fermé';
-                closeTicketBtn.style.borderColor = '#4a8a4a';
-                closeTicketBtn.style.color = '#4a8a4a';
-                
-                if (messageInterval) {
-                    clearInterval(messageInterval);
-                }
-            })
-            .catch(err => {
-                console.error('Erreur fermeture:', err);
-                alert('❌ Erreur lors de la fermeture du ticket.');
-                isClosing = false;
-                closeTicketBtn.disabled = false;
-                closeTicketBtn.textContent = '🔒 Fermer';
-                messageInput.disabled = false;
-                sendBtn.disabled = false;
-            });
-        }
-
-        // ===== UTILITAIRES =====
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // ===== VÉRIFIER SI UN TICKET EST DANS L'URL =====
-        const urlParams = new URLSearchParams(window.location.search);
-        const ticketParam = urlParams.get('ticket');
-        if (ticketParam) {
-            ticketNumber = parseInt(ticketParam);
-            usernameInput.placeholder = 'Entrez votre pseudo pour rejoindre';
-            connectBtn.textContent = '📨 Rejoindre le ticket';
-        }
-
-        // ===== NETTOYER =====
-        window.addEventListener('beforeunload', function() {
-            if (messageInterval) {
-                clearInterval(messageInterval);
-            }
-        });
-    </script>
-</body>
-</html>
+                        <div class="message-text
