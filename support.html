@@ -649,4 +649,123 @@
                             <span class="timestamp">${time}</span>
                             ${staffBadge}
                         </div>
-                        <div class="message-text
+                        <div class="message-text">${escapeHtml(msg.message)}</div>
+                    </div>
+                `;
+            }
+            
+            messagesContainer.appendChild(msgDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // ===== ENVOYER UN MESSAGE =====
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message || !currentUser || !currentTicket || isClosing) return;
+            
+            messageInput.value = '';
+            messageInput.disabled = true;
+            sendBtn.disabled = true;
+            
+            const avatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser}`;
+            
+            fetch(`${BOT_API_URL}/send_message`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ticket_id: currentTicket,
+                    username: currentUser,
+                    message: message,
+                    avatar: avatar
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    addMessageToChat({
+                        username: currentUser,
+                        message: message,
+                        timestamp: new Date().toISOString(),
+                        avatar: avatar
+                    });
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }
+                messageInput.disabled = false;
+                sendBtn.disabled = false;
+                messageInput.focus();
+            })
+            .catch(err => {
+                console.error('Erreur envoi:', err);
+                messageInput.disabled = false;
+                sendBtn.disabled = false;
+                alert('❌ Erreur lors de l\'envoi du message.');
+            });
+        }
+
+        // ===== FERMER LE TICKET =====
+        function closeTicket() {
+            if (isClosing) return;
+            
+            if (!confirm('Voulez-vous vraiment fermer ce ticket ?')) return;
+            
+            isClosing = true;
+            messageInput.disabled = true;
+            sendBtn.disabled = true;
+            closeTicketBtn.disabled = true;
+            closeTicketBtn.textContent = '⏳ Fermeture...';
+            
+            fetch(`${BOT_API_URL}/close_ticket`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ticket_id: currentTicket })
+            })
+            .then(() => {
+                addMessageToChat({
+                    username: 'System',
+                    message: '🔒 Ticket fermé. Merci de nous avoir contactés !',
+                    timestamp: new Date().toISOString(),
+                    is_system: true
+                });
+                messageInput.disabled = true;
+                sendBtn.disabled = true;
+                closeTicketBtn.textContent = '✅ Fermé';
+                closeTicketBtn.style.borderColor = '#4a8a4a';
+                closeTicketBtn.style.color = '#4a8a4a';
+                
+                if (messageInterval) {
+                    clearInterval(messageInterval);
+                }
+            })
+            .catch(err => {
+                console.error('Erreur fermeture:', err);
+                alert('❌ Erreur lors de la fermeture du ticket.');
+                isClosing = false;
+                closeTicketBtn.disabled = false;
+                closeTicketBtn.textContent = '🔒 Fermer';
+                messageInput.disabled = false;
+                sendBtn.disabled = false;
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const ticketParam = urlParams.get('ticket');
+        if (ticketParam) {
+            ticketNumber = parseInt(ticketParam);
+            usernameInput.placeholder = 'Entrez votre pseudo pour rejoindre';
+            connectBtn.textContent = '📨 Rejoindre le ticket';
+        }
+
+        window.addEventListener('beforeunload', function() {
+            if (messageInterval) {
+                clearInterval(messageInterval);
+            }
+        });
+    </script>
+</body>
+</html>
