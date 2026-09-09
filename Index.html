@@ -1,1 +1,266 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Serveur - Accueil</title>
+    <style>
+        /* RESET & BASE */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: #0b0a0a;
+            color: #f5f0e6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            padding: 2rem 1.5rem 4rem;
+        }
+
+        /* ===== BANNIÈRE IMAGE ===== */
+        .banner-wrapper {
+            width: 100%;
+            border-radius: 28px;
+            overflow: hidden;
+            border: 2px solid #c9a84c;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7), 0 0 0 1px #b8943e inset;
+            transition: box-shadow 0.3s ease, transform 0.2s ease;
+            margin-bottom: 3.5rem;
+            background: #1f1b16; /* couleur de fond si l'image ne charge pas */
+        }
+
+        .banner-wrapper:hover {
+            box-shadow: 0 16px 40px rgba(201, 168, 76, 0.2), 0 0 0 2px #dbb55a inset;
+            transform: scale(1.005);
+        }
+
+        .banner-image {
+            display: block;
+            width: 100%;
+            height: auto;
+            max-height: 350px; /* tu peux ajuster ou supprimer */
+            object-fit: cover;  /* l'image couvre tout sans se déformer */
+            background: #1f1b16;
+        }
+
+        /* GRILLE DES ISSUES (liens) */
+        .issues-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 2rem 1.5rem;
+            margin: 3.5rem 0 4rem;
+        }
+
+        .issue-card {
+            background: #181410;
+            border: 1px solid #3f3423;
+            border-radius: 60px 16px 16px 60px;
+            padding: 1rem 1.8rem 1rem 2.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            text-decoration: none;
+            color: #f0e3cf;
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: 0.3px;
+            backdrop-filter: blur(2px);
+            background: rgba(24, 20, 16, 0.85);
+            border-left: 6px solid #c9a84c;
+        }
+
+        .issue-card:hover {
+            transform: scale(1.02) translateY(-4px);
+            background: #25201a;
+            border-color: #e8c45a;
+            box-shadow: 0 12px 24px rgba(201, 168, 76, 0.25);
+            color: #fff6e0;
+        }
+
+        .issue-card .icon {
+            font-size: 2rem;
+            line-height: 1;
+            filter: drop-shadow(0 0 6px rgba(201, 168, 76, 0.3));
+        }
+
+        .issue-card .label {
+            flex: 1;
+        }
+
+        .issue-card.support {
+            border-left-color: #7aa8d6;
+        }
+        .issue-card.support:hover {
+            border-color: #8bb9e8;
+        }
+
+        .issue-card.staff {
+            border-left-color: #b07c4a;
+        }
+        .issue-card.staff:hover {
+            border-color: #dba068;
+        }
+
+        /* TEXTE DESCRIPTIF */
+        .description {
+            background: #14110e;
+            border: 1px solid #3f3423;
+            border-radius: 40px 8px 40px 8px;
+            padding: 2.8rem 3rem;
+            margin-top: 1.5rem;
+            box-shadow: 0 8px 0 #0a0806, 0 12px 30px rgba(0, 0, 0, 0.6);
+            transition: border 0.2s;
+        }
+
+        .description:hover {
+            border-color: #b8943e;
+        }
+
+        .description h2 {
+            font-size: 2rem;
+            font-weight: 500;
+            color: #e8d6a8;
+            border-bottom: 2px dashed #7a643a;
+            padding-bottom: 0.6rem;
+            margin-bottom: 1.8rem;
+            letter-spacing: 2px;
+        }
+
+        .description p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #d6ccbb;
+            text-align: justify;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .description p::first-letter {
+            font-size: 2.2rem;
+            color: #e8c45a;
+            font-weight: 600;
+            margin-right: 4px;
+        }
+
+        .footer-note {
+            margin-top: 4rem;
+            font-size: 0.85rem;
+            color: #5a4f3a;
+            text-align: center;
+            border-top: 1px solid #2f281e;
+            padding-top: 2rem;
+            width: 80%;
+        }
+        .footer-note span {
+            color: #b8943e;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 700px) {
+            .banner-image {
+                max-height: 200px;
+            }
+            .issues-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+            .issue-card {
+                padding: 0.8rem 1.2rem 0.8rem 1.6rem;
+                font-size: 1rem;
+                border-radius: 40px 12px 12px 40px;
+            }
+            .description {
+                padding: 1.8rem 1.2rem;
+            }
+            .description p {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .issues-grid {
+                grid-template-columns: 1fr;
+            }
+            .banner-image {
+                max-height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- ===== BANNIÈRE AVEC IMAGE ===== -->
+        <div class="banner-wrapper">
+            <img 
+                src="votre-banniere.png"   <!-- 🔁 REMPLACE par le nom de ton fichier -->
+                alt="Bannière du serveur" 
+                class="banner-image"
+                loading="lazy"
+            >
+        </div>
+
+        <!-- GRILLE : ISSUES (liens) -->
+        <div class="issues-grid">
+            <!-- YouTube -->
+            <a href="#" class="issue-card" target="_blank" rel="noopener">
+                <span class="icon">▶️</span>
+                <span class="label">YouTube</span>
+            </a>
+            <!-- Twitch -->
+            <a href="#" class="issue-card" target="_blank" rel="noopener">
+                <span class="icon">📺</span>
+                <span class="label">Twitch</span>
+            </a>
+            <!-- Discord -->
+            <a href="#" class="issue-card" target="_blank" rel="noopener">
+                <span class="icon">💬</span>
+                <span class="label">Discord</span>
+            </a>
+            <!-- Support (redirige vers Discord) -->
+            <a href="#" class="issue-card support" target="_blank" rel="noopener">
+                <span class="icon">🛟</span>
+                <span class="label">Support</span>
+            </a>
+            <!-- RC Staff (Google Doc) -->
+            <a href="#" class="issue-card staff" target="_blank" rel="noopener">
+                <span class="icon">📄</span>
+                <span class="label">RC Staff</span>
+            </a>
+        </div>
+
+        <!-- TEXTE DESCRIPTIF -->
+        <section class="description">
+            <h2>⚜️ À propos du serveur</h2>
+            <p>
+                <!-- 👇 Remplace par ta description -->
+                Bienvenue sur <strong>GoldCraft</strong>, un serveur survie semi-RP où la bonne humeur et l'entraide sont reines. 
+                Nous proposons des événements hebdomadaires, des quêtes exclusives et une économie dynamique. 
+                Que tu sois bâtisseur, explorateur ou fermier, tu trouveras ta place parmi notre communauté grandissante. 
+                Rejoins-nous pour vivre des aventures mémorables, et n'oublie pas de suivre nos créateurs sur YouTube et Twitch !
+            </p>
+            <p style="margin-top:1.5rem; font-style:italic; color:#b8a582;">
+                « Un monde doré t'attend. »
+            </p>
+        </section>
+
+        <div class="footer-note">
+            <span>✦</span>  serveur gold · thème clair & noir  <span>✦</span>
+        </div>
+
+    </div>
+</body>
+              </html>
