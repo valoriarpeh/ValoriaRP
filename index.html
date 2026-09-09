@@ -128,12 +128,51 @@
         }
 
         .description p {
-            font-size: 1.2rem;
-            line-height: 1.8;
+            font-size: 1.1rem;
+            line-height: 1.9;
             color: #d6ccbb;
             text-align: justify;
             max-width: 900px;
             margin: 0 auto;
+        }
+
+        .description ul {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0 1.5rem 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem 1.5rem;
+        }
+
+        .description ul li::before {
+            content: "✦ ";
+            color: #e8c45a;
+        }
+
+        .description ul li {
+            font-size: 1.05rem;
+            color: #d6ccbb;
+            padding: 0.2rem 0;
+        }
+
+        .description .highlight {
+            color: #e8c45a;
+            font-weight: 600;
+        }
+
+        .description .separator-line {
+            border: none;
+            border-top: 1px dashed #4d3f2a;
+            margin: 2rem 0;
+        }
+
+        .description .quote {
+            font-style: italic;
+            color: #b8a582;
+            text-align: center;
+            font-size: 1.2rem;
+            margin-top: 1.5rem;
         }
 
         /* ===== FAQ ===== */
@@ -223,6 +262,13 @@
             .faq-question {
                 font-size: 1rem;
             }
+            .description ul {
+                grid-template-columns: 1fr;
+                gap: 0.3rem;
+            }
+            .description ul li {
+                font-size: 0.95rem;
+            }
         }
 
         @media (max-width: 480px) {
@@ -269,19 +315,168 @@
             <a href="https://forms.gle/4kDtktgDHbBd15gd7" class="staff" target="_blank" rel="noopener">RC Staff</a>
         </div>
 
-        <!-- DESCRIPTION -->
+        <!-- ===== NOUVELLE DESCRIPTION ===== -->
         <section class="description">
-            <h2>⚜️ À propos de ValoriaRP</h2>
+            <h2>🌆 BIENVENUE SUR VALORIA RP</h2>
+
             <p>
-                Bienvenue sur <strong>ValoriaRP</strong>, un serveur RolePlay médiéval-fantastique où chaque joueur écrit sa propre légende. 
-                Plonge dans un monde immersif avec une économie unique, des quêtes scénarisées et une communauté passionnée. 
-                Que tu sois marchand, guerrier, ou aventurier, ta place est ici.
+                ✨ <strong>Entre dans une ville où chaque joueur peut écrire sa propre histoire.</strong><br>
+                Bienvenue à <strong>Valoria RP</strong>, une expérience Roleplay immersive sur Roblox dans laquelle tu peux créer ton personnage, choisir ton métier, rencontrer d'autres joueurs et vivre des aventures uniques !
+            </p>
+
+            <hr class="separator-line">
+
+            <p>
+                <strong>🏙️ Une ville qui ne dort jamais</strong><br>
+                Valoria est une ville vivante, remplie d'activités, de métiers et de situations imprévues. Que tu souhaites mener une vie tranquille, faire carrière dans les services publics ou simplement explorer la ville avec tes amis, <strong class="highlight">c'est toi qui décides de ton avenir.</strong>
+            </p>
+
+            <ul>
+                <li>🚗 Parcours les rues de Valoria</li>
+                <li>🏠 Installe-toi dans ta propre maison</li>
+                <li>👥 Rencontre de nouveaux joueurs</li>
+                <li>🛍️ Découvre les commerces et différents lieux de la ville</li>
+                <li>🎭 Crée tes propres scènes Roleplay</li>
+                <li>🌆 Profite d'une ville pensée pour favoriser l'immersion</li>
+            </ul>
+
+            <hr class="separator-line">
+
+            <p>
+                <strong>👮 Rejoins les services publics</strong><br>
+                Tu veux faire respecter la loi et protéger les citoyens ?
+            </p>
+
+            <ul>
+                <li>👮 <strong>Police</strong> — Patrouille dans la ville, réponds aux appels et assure la sécurité des habitants.</li>
+                <li>🚑 <strong>EMS / Secours</strong> — Interviens lors des accidents et viens en aide aux personnes qui en ont besoin.</li>
+                <li>🚒 <strong>Pompiers</strong> — Interviens lors des incendies et différentes situations d'urgence.</li>
+            </ul>
+
+            <p style="font-size:1rem; color:#b8a582; margin-top:0.5rem;">
+                Chaque service possède son propre rôle et contribue à faire vivre <strong>Valoria RP</strong> !
+            </p>
+
+            <hr class="separator-line">
+
+            <p>
+                <strong>💼 Choisis ton métier</strong><br>
+                À Valoria, chacun peut construire son propre parcours.
+            </p>
+
+            <ul>
+                <li>👔 Trouve un emploi</li>
+                <li>💵 Gagne ton argent</li>
+                <li>🏢 Développe ta carrière</li>
+                <li>🚕 Travaille dans différents secteurs</li>
+                <li>🏪 Découvre les commerces de la ville</li>
+                <li>📈 Fais évoluer ton personnage</li>
+            </ul>
+
+            <p style="font-size:1rem; color:#b8a582; margin-top:0.5rem;">
+                Tu préfères travailler tranquillement ou viser une carrière importante ? <strong class="highlight">C'est ton choix !</strong>
+            </p>
+
+            <hr class="separator-line">
+
+            <p>
+                <strong>🚘 Une ville à explorer</strong><br>
+                Monte dans ton véhicule et pars découvrir Valoria !
+            </p>
+
+            <ul>
+                <li>🚗 Conduis dans toute la ville</li>
+                <li>🛣️ Explore les différents quartiers</li>
+                <li>⛽ Fais le plein</li>
+                <li>🏙️ Découvre les lieux importants</li>
+                <li>🚦 Respecte le code de la route et les règles du Roleplay</li>
+            </ul>
+
+            <hr class="separator-line">
+
+            <p>
+                <strong>🎭 Ton histoire, tes choix</strong><br>
+                Dans <strong>Valoria RP</strong>, aucune histoire n'est identique.
+            </p>
+
+            <ul>
+                <li>🤝 Fais-toi des amis</li>
+                <li>🎬 Crée des scènes mémorables</li>
+                <li>🚨 Participe à des interventions</li>
+                <li>🏠 Construis ta vie</li>
+                <li>💼 Développe ton personnage</li>
+                <li>🌆 Fais partie de la communauté</li>
+            </ul>
+
+            <p style="font-size:1rem; color:#b8a582; margin-top:0.5rem;">
+                <strong class="highlight">Chaque joueur apporte quelque chose à l'histoire de Valoria.</strong>
+            </p>
+
+            <hr class="separator-line">
+
+            <p>
+                <strong>👥 Une communauté</strong><br>
+                Valoria RP est également une communauté où le respect, le fair-play et la bonne ambiance sont essentiels.
+            </p>
+
+            <ul>
+                <li>⭐ Respecte les autres joueurs</li>
+                <li>🤝 Joue dans une bonne ambiance</li>
+                <li>🎭 Respecte le Roleplay</li>
+                <li>📜 Suis les règles du serveur</li>
+                <li>💬 Participe à la vie de la communauté</li>
+            </ul>
+
+            <p style="font-size:1rem; color:#b8a582; margin-top:0.5rem;">
+                Notre objectif est de créer un environnement <strong>fun, immersif et agréable pour tous les joueurs.</strong>
+            </p>
+
+            <hr class="separator-line">
+
+            <p>
+                <strong>🚀 Pourquoi rejoindre Valoria RP ?</strong>
+            </p>
+
+            <ul>
+                <li>✅ Une expérience Roleplay immersive</li>
+                <li>✅ Une ville vivante et évolutive</li>
+                <li>✅ Plusieurs métiers et possibilités</li>
+                <li>✅ Des services publics</li>
+                <li>✅ Des véhicules et différents lieux à découvrir</li>
+                <li>✅ Une communauté active</li>
+                <li>✅ Des événements et scènes Roleplay</li>
+                <li>✅ Une expérience à vivre avec tes amis</li>
+                <li>✅ De nombreuses histoires à créer</li>
+            </ul>
+
+            <hr class="separator-line">
+
+            <p style="font-size:1.2rem; text-align:center;">
+                🔥 <strong class="highlight">PRÊT À ÉCRIRE TON HISTOIRE ?</strong>
+            </p>
+
+            <p style="text-align:center; color:#b8a582;">
+                Valoria t'attend.<br>
+                Que tu sois un nouveau citoyen, un futur policier, un secouriste, un pompier, un travailleur ou simplement quelqu'un qui veut découvrir la ville…
+            </p>
+
+            <p style="text-align:center; font-size:1.3rem; color:#e8c45a; font-weight:600; margin-top:1rem;">
+                🌆 TON AVENTURE COMMENCE ICI.
+            </p>
+
+            <p style="text-align:center; margin-top:0.5rem;">
+                🚔 <strong>EH ROBLOX — VALORIA RP</strong><br>
+                ⭐ <em>Ta ville. Ton personnage. Ton histoire.</em>
+            </p>
+
+            <p style="text-align:center; font-size:1.1rem; margin-top:1.5rem; color:#e8c45a;">
+                🎮 Rejoins Valoria RP dès maintenant et montre-nous ce dont tu es capable !
             </p>
         </section>
 
         <!-- ===== FAQ ===== -->
         <section class="faq">
-            <h2>❓ Foire Aux Questions</h2>
+            <h2>❓ FAQ</h2>
 
             <div class="faq-item">
                 <div class="faq-question">Comment rejoindre le serveur ?</div>
