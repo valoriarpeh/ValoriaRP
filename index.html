@@ -101,13 +101,14 @@
             user-select: none;
         }
 
-        /* TEXTE DESCRIPTIF */
+        /* ===== DESCRIPTION ===== */
         .description {
             background: #14110e;
             border: 1px solid #3f3423;
             border-radius: 40px 8px 40px 8px;
             padding: 2.8rem 3rem;
             margin-top: 1.5rem;
+            margin-bottom: 2.5rem;
             box-shadow: 0 8px 0 #0a0806, 0 12px 30px rgba(0, 0, 0, 0.6);
             transition: border 0.2s;
         }
@@ -135,6 +136,69 @@
             margin: 0 auto;
         }
 
+        /* ===== FAQ ===== */
+        .faq {
+            background: #14110e;
+            border: 1px solid #3f3423;
+            border-radius: 40px 8px 40px 8px;
+            padding: 2.8rem 3rem;
+            margin-top: 0.5rem;
+            box-shadow: 0 8px 0 #0a0806, 0 12px 30px rgba(0, 0, 0, 0.6);
+            transition: border 0.2s;
+        }
+
+        .faq:hover {
+            border-color: #b8943e;
+        }
+
+        .faq h2 {
+            font-size: 2rem;
+            font-weight: 500;
+            color: #e8d6a8;
+            border-bottom: 2px dashed #7a643a;
+            padding-bottom: 0.6rem;
+            margin-bottom: 1.8rem;
+            letter-spacing: 2px;
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #2a241e;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .faq-question {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #e8c45a;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .faq-question::before {
+            content: "❓";
+            font-size: 1.2rem;
+        }
+
+        .faq-answer {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: #d6ccbb;
+            padding-left: 2rem;
+        }
+
+        .faq-answer strong {
+            color: #e8c45a;
+        }
+
         @media (max-width: 700px) {
             .banner-image {
                 max-height: 200px;
@@ -148,10 +212,15 @@
             .links .separator {
                 display: none;
             }
-            .description {
+            .description,
+            .faq {
                 padding: 1.8rem 1.2rem;
             }
-            .description p {
+            .description p,
+            .faq-answer {
+                font-size: 1rem;
+            }
+            .faq-question {
                 font-size: 1rem;
             }
         }
@@ -164,6 +233,12 @@
                 flex-direction: column;
                 align-items: center;
                 gap: 0.8rem;
+            }
+            .faq-question::before {
+                display: none;
+            }
+            .faq-answer {
+                padding-left: 0;
             }
         }
     </style>
@@ -183,7 +258,7 @@
 
         <!-- LIENS TEXTE SIMPLES -->
         <div class="links">
-            <a href="#" target="_blank" rel="noopener">YouTube</a>
+            <a href="https://www.youtube.com/@MisterVal56" target="_blank" rel="noopener">YouTube</a>
             <span class="separator">|</span>
             <a href="#" target="_blank" rel="noopener">Twitch</a>
             <span class="separator">|</span>
@@ -198,11 +273,50 @@
         <section class="description">
             <h2>⚜️ À propos de ValoriaRP</h2>
             <p>
-                <!-- 👇 Mets ta description ici -->
                 Bienvenue sur <strong>ValoriaRP</strong>, un serveur RolePlay médiéval-fantastique où chaque joueur écrit sa propre légende. 
                 Plonge dans un monde immersif avec une économie unique, des quêtes scénarisées et une communauté passionnée. 
                 Que tu sois marchand, guerrier, ou aventurier, ta place est ici.
             </p>
+        </section>
+
+        <!-- ===== FAQ ===== -->
+        <section class="faq">
+            <h2>❓ Foire Aux Questions</h2>
+
+            <div class="faq-item">
+                <div class="faq-question">Comment rejoindre le serveur ?</div>
+                <div class="faq-answer">
+                    Clique sur le lien <strong>Discord</strong> ci-dessus, rejoins notre communauté, et suis les instructions dans le salon <strong>#bienvenue</strong>.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Quel est l'âge minimum ?</div>
+                <div class="faq-answer">
+                    Le serveur est accessible à partir de <strong>10 ans</strong> pour garantir une expérience mature et agréable pour tous.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Y a-t-il des quêtes ou des événements ?</div>
+                <div class="faq-answer">
+                    Oui ! Des <strong>quêtes scénarisées</strong> sont disponibles en jeu, et des <strong>événements communautaires</strong> sont organisés régulièrement (chasses au trésor, tournois, etc.).
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Est-ce que le serveur est payant ?</div>
+                <div class="faq-answer">
+                    Non, le serveur est <strong>gratuit</strong>. Un système de dons peut être mis en place pour soutenir le projet, mais il n'y a aucune obligation.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Comment contacter le staff ?</div>
+                <div class="faq-answer">
+                    Tu peux contacter le staff via le lien <strong>Support</strong> ci-dessus (qui redirige vers Discord) ou via le formulaire <strong>RC Staff</strong> pour les questions spécifiques.
+                </div>
+            </div>
         </section>
 
     </div>
