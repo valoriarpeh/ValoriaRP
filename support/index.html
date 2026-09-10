@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support - ValoriaRP</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: #0b0a0a;
+            color: #f5f0e6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        .box {
+            background: #14110e;
+            border: 1px solid #3f3423;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.7);
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h1 { color: #e8d6a8; text-align: center; margin-bottom: 0.5rem; font-size: 1.8rem; }
+        .subtitle { text-align: center; color: #b8a582; margin-bottom: 1.5rem; font-size: 0.95rem; }
+        .info-box {
+            background: #1f1b16;
+            border: 1px solid #3f3423;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .info-box p { color: #b8a582; font-size: 0.9rem; margin: 0.3rem 0; }
+        .info-box .highlight { color: #e8c45a; font-weight: 600; }
+        input, textarea {
+            width: 100%;
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            border-radius: 10px;
+            border: 1px solid #3f3423;
+            background: #1f1b16;
+            color: #f5f0e6;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        input:focus, textarea:focus { outline: none; border-color: #c9a84c; }
+        textarea { resize: vertical; min-height: 120px; }
+        button {
+            width: 100%;
+            padding: 0.9rem;
+            border: none;
+            border-radius: 10px;
+            background: #c9a84c;
+            color: #0b0a0a;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            transition: all 0.3s;
+        }
+        button:hover:not(:disabled) { background: #dbb55a; transform: scale(1.02); }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        .admin-link, .back-link {
+            position: fixed;
+            top: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .admin-link { right: 1rem; color: #7aa8d6; border: 1px solid #7aa8d6; }
+        .admin-link:hover { background: #7aa8d6; color: #0b0a0a; }
+        .back-link { left: 1rem; color: #b8a582; border: 1px solid #3f3423; }
+        .back-link:hover { border-color: #c9a84c; color: #e8c45a; }
+        .footer-note { text-align: center; color: #6a5f4a; font-size: 0.75rem; margin-top: 1rem; }
+    </style>
+</head>
+<body>
+    <a href="../" class="back-link">← Retour au site</a>
+    <a href="admin.html" class="admin-link">🔐 Admin</a>
+
+    <div class="box">
+        <h1>🎫 Support ValoriaRP</h1>
+        <p class="subtitle">Un membre du staff vous répondra dès que possible</p>
+
+        <div class="info-box">
+            <p><span class="highlight">📌 Comment ça marche ?</span></p>
+            <p>1️⃣ Entrez votre pseudo</p>
+            <p>2️⃣ Décrivez votre problème</p>
+            <p>3️⃣ Un slot de support s'ouvre pour vous</p>
+            <p>4️⃣ Échangez avec le staff en direct</p>
+        </div>
+
+        <input type="text" id="pseudo" placeholder="Votre pseudo" maxlength="32">
+        <textarea id="probleme" placeholder="Décrivez votre problème..." maxlength="1000"></textarea>
+        <button id="btn" onclick="creerTicket()">💬 Créer un ticket</button>
+        <p class="footer-note">🔒 Ticket privé · Réponse rapide</p>
+    </div>
+
+    <script type="module">
+        import { db, ref, push, set, onValue, get } from './firebase-config.js';
+
+        let ticketsExistants = [];
+        const ticketsRef = ref(db, 'tickets');
+        onValue(ticketsRef, (snap) => {
+            const data = snap.val() || {};
+            ticketsExistants = Object.entries(data).map(([id, t]) => ({ id, ...t }));
+        });
+
+        const ancienTicket = localStorage.getItem('valoria_mon_ticket');
+        if (ancienTicket) {
+            const snap = await get(ref(db, 'tickets/' + ancienTicket));
+            if (snap.exists()) {
+                const t = snap.val();
+                window.location.href = t.statut === 'en_cours' ? 'ticket.html' : 'attente.html';
+            } else {
+                localStorage.removeItem('valoria_mon_ticket');
+            }
+        }
+
+        window.creerTicket = async function() {
+            const btn = document.getElementById('btn');
+            const pseudo = document.getElementById('pseudo').value.trim();
+            const probleme = document.getElementById('probleme').value.trim();
+
+            if (!pseudo || !probleme) {
+                alert('Remplis tous les champs !');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = '⏳ Création du ticket...';
+
+            const enCours = ticketsExistants.filter(t => t.statut === 'en_cours');
+            const utilises = enCours.map(t => t.slot);
+            let slotLibre = null;
+            for (let i = 1; i <= 5; i++) {
+                if (!utilises.includes(i)) { slotLibre = i; break; }
+            }
+
+            const nouveauTicket = {
+                pseudo,
+                probleme,
+                statut: slotLibre ? 'en_cours' : 'attente',
+                slot: slotLibre || null,
+                createdAt: Date.now(),
+                messages: {}
+            };
+
+            try {
+                const newRef = push(ticketsRef);
+                await set(newRef, nouveauTicket);
+                localStorage.setItem('valoria_mon_ticket', newRef.key);
+
+                window.location.href = nouveauTicket.statut === 'en_cours' ? 'ticket.html' : 'attente.html';
+            } catch (err) {
+                console.error(err);
+                alert('❌ Erreur lors de la création du ticket.');
+                btn.disabled = false;
+                btn.textContent = '💬 Créer un ticket';
+            }
+        };
+    </script>
+</body>
+</html>
