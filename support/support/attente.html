@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>En attente - ValoriaRP</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: #0b0a0a; color: #f5f0e6;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; padding: 1rem;
+        }
+        .box {
+            background: #14110e; border: 1px solid #3f3423;
+            border-radius: 20px; padding: 3rem 2rem;
+            text-align: center; max-width: 500px; width: 100%;
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h1 { color: #e8d6a8; margin-bottom: 1rem; }
+        p { color: #b8a582; margin-bottom: 1rem; line-height: 1.5; }
+        .numero {
+            font-size: 5rem; color: #c9a84c; font-weight: bold;
+            margin: 1.5rem 0; animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .spinner {
+            width: 40px; height: 40px;
+            border: 4px solid #3f3423; border-top: 4px solid #c9a84c;
+            border-radius: 50%; animation: spin 1s linear infinite;
+            margin: 1.5rem auto 0;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>⏳ File d'attente</h1>
+        <p>Tous les slots de support sont occupés.</p>
+        <div class="numero" id="position">N°1</div>
+        <p>Vous serez redirigé dès qu'un slot se libère.</p>
+        <div class="spinner"></div>
+    </div>
+
+    <script type="module">
+        import { db, ref, onValue } from './firebase-config.js';
+
+        const ticketId = localStorage.getItem('valoria_mon_ticket');
+        if (!ticketId) window.location.href = 'index.html';
+
+        onValue(ref(db, 'tickets/' + ticketId), (snap) => {
+            const t = snap.val();
+            if (!t) {
+                localStorage.removeItem('valoria_mon_ticket');
+                window.location.href = 'ferme.html';
+                return;
+            }
+            if (t.statut === 'en_cours') window.location.href = 'ticket.html';
+        });
+
+        onValue(ref(db, 'tickets'), (snap) => {
+            const data = snap.val() || {};
+            const attente = Object.entries(data)
+                .filter(([id, t]) => t.statut === 'attente')
+                .sort((a, b) => a[1].createdAt - b[1].createdAt);
+            const maPos = attente.findIndex(([id]) => id === ticketId) + 1;
+            if (maPos > 0) document.getElementById('position').textContent = 'N°' + maPos;
+        });
+    </script>
+</body>
+</html>
