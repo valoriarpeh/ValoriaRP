@@ -110,6 +110,7 @@
 
     <script type="module">
         import { db, ref, push, set, onValue, get } from './firebase-config.js';
+        import { WEBHOOK_URL, ROLE_ID, SITE_URL } from './webhook-config.js';
 
         let ticketsExistants = [];
         const ticketsRef = ref(db, 'tickets');
@@ -126,6 +127,46 @@
                 window.location.href = t.statut === 'en_cours' ? 'ticket.html' : 'attente.html';
             } else {
                 localStorage.removeItem('valoria_mon_ticket');
+            }
+        }
+
+        // ⭐ Envoie la notification Discord
+        async function notifierDiscord(pseudo, probleme, statut) {
+            try {
+                const statutTexte = statut === 'en_cours'
+                    ? '🟢 Directement pris en charge'
+                    : '⏳ En file d\'attente';
+
+                await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        content: `<@&${ROLE_ID}>`,
+                        embeds: [{
+                            title: "🎫 Nouveau ticket de support",
+                            color: 0xc9a84c,
+                            fields: [
+                                { name: "👤 Pseudo", value: pseudo, inline: true },
+                                { name: "📊 Statut", value: statutTexte, inline: true },
+                                { name: "📝 Problème", value: probleme.substring(0, 500) }
+                            ],
+                            footer: { text: "ValoriaRP • Support Web" },
+                            timestamp: new Date().toISOString()
+                        }],
+                        components: [{
+                            type: 1,
+                            components: [{
+                                type: 2,
+                                style: 5,
+                                label: "🎫 Voir le support",
+                                url: SITE_URL
+                            }]
+                        }]
+                    })
+                });
+                console.log('✅ Notification Discord envoyée');
+            } catch (err) {
+                console.error('❌ Erreur notification Discord:', err);
             }
         }
 
@@ -162,6 +203,9 @@
                 const newRef = push(ticketsRef);
                 await set(newRef, nouveauTicket);
                 localStorage.setItem('valoria_mon_ticket', newRef.key);
+
+                // ⭐ Notification Discord
+                await notifierDiscord(pseudo, probleme, nouveauTicket.statut);
 
                 window.location.href = nouveauTicket.statut === 'en_cours' ? 'ticket.html' : 'attente.html';
             } catch (err) {
