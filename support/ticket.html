@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon ticket - ValoriaRP</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; background: #0b0a0a; color: #f5f0e6; padding: 1rem; min-height: 100vh; }
+        .container {
+            max-width: 800px; margin: 0 auto;
+            background: #14110e; border: 1px solid #3f3423;
+            border-radius: 20px; padding: 1.5rem;
+            display: flex; flex-direction: column;
+            height: calc(100vh - 2rem);
+        }
+        h1 { color: #e8d6a8; margin-bottom: 1rem; font-size: 1.3rem; }
+        .messages {
+            flex: 1; background: #0b0a0a; border-radius: 12px;
+            padding: 1rem; overflow-y: auto; margin: 1rem 0;
+            border: 1px solid #2a241e;
+        }
+        .messages::-webkit-scrollbar { width: 6px; }
+        .messages::-webkit-scrollbar-track { background: #1f1b16; border-radius: 3px; }
+        .messages::-webkit-scrollbar-thumb { background: #c9a84c; border-radius: 3px; }
+        .msg {
+            margin-bottom: 0.8rem; padding: 0.6rem 1rem;
+            border-radius: 10px; background: #1f1b16;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .msg.moi { background: #1f2a1f; border-left: 3px solid #4a8a4a; }
+        .msg.staff { background: #1f1a0f; border-left: 3px solid #c9a84c; }
+        .msg.system { background: transparent; text-align: center; color: #b8a582; font-style: italic; font-size: 0.9rem; }
+        .msg .auteur { font-weight: bold; color: #e8d6a8; font-size: 0.85rem; margin-bottom: 0.2rem; }
+        .msg .texte { line-height: 1.4; }
+        .input-row { display: flex; gap: 0.5rem; }
+        .input-row input {
+            flex: 1; padding: 0.8rem; border-radius: 10px;
+            border: 1px solid #3f3423; background: #1f1b16;
+            color: #f5f0e6; font-size: 1rem;
+        }
+        .input-row input:focus { outline: none; border-color: #c9a84c; }
+        .input-row button {
+            padding: 0.8rem 1.5rem; border: none; border-radius: 10px;
+            background: #c9a84c; color: #0b0a0a; font-weight: bold;
+            cursor: pointer; transition: all 0.3s;
+        }
+        .input-row button:hover { background: #dbb55a; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="titre">🎫 Mon ticket</h1>
+        <div class="messages" id="messages"></div>
+        <div class="input-row">
+            <input type="text" id="msg-input" placeholder="Votre message..." maxlength="500">
+            <button onclick="envoyer()">Envoyer</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { db, ref, update, onValue } from './firebase-config.js';
+
+        const ticketId = localStorage.getItem('valoria_mon_ticket');
+        if (!ticketId) window.location.href = 'index.html';
+
+        let ticketActuel = null;
+
+        onValue(ref(db, 'tickets/' + ticketId), (snapshot) => {
+            const data = snapshot.val();
+            if (!data) {
+                localStorage.removeItem('valoria_mon_ticket');
+                window.location.href = 'ferme.html';
+                return;
+            }
+            ticketActuel = { id: ticketId, ...data };
+            document.getElementById('titre').textContent = `🎫 Ticket de ${data.pseudo}`;
+            afficherMessages(data.messages || {});
+        });
+
+        function afficherMessages(messages) {
+            const container = document.getElementById('messages');
+            const msgArray = Object.values(messages).sort((a, b) => a.timestamp - b.timestamp);
+            container.innerHTML = '';
+            msgArray.forEach(m => {
+                const div = document.createElement('div');
+                if (m.role === 'system') {
+                    div.className = 'msg system';
+                    div.textContent = m.texte;
+                } else {
+                    div.className = 'msg ' + (m.role === 'joueur' ? 'moi' : 'staff');
+                    div.innerHTML = `<div class="auteur">${m.role === 'joueur' ? escapeHtml(ticketActuel.pseudo) : 'Staff'}</div>
+                                     <div class="texte">${escapeHtml(m.texte)}</div>`;
+                }
+                container.appendChild(div);
+            });
+            container.scrollTop = container.scrollHeight;
+        }
+
+        window.envoyer = async function() {
+            const input = document.getElementById('msg-input');
+            const texte = input.value.trim();
+            if (!texte || !ticketActuel) return;
+            const timestamp = Date.now();
+            await update(ref(db, `tickets/${ticketId}/messages`), {
+                [timestamp]: { role: 'joueur', texte, timestamp }
+            });
+            input.value = '';
+        };
+
+        document.getElementById('msg-input').addEventListener('keypress', e => {
+            if (e.key === 'Enter') window.envoyer();
+        });
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
