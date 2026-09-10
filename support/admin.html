@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - ValoriaRP</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; background: #0b0a0a; color: #f5f0e6; padding: 1rem; min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: #e8d6a8; margin-bottom: 1rem; }
+        .login-box {
+            background: #14110e; border: 1px solid #3f3423;
+            border-radius: 20px; padding: 2rem;
+            max-width: 400px; margin: 4rem auto; text-align: center;
+        }
+        input {
+            width: 100%; padding: 0.8rem; margin: 1rem 0;
+            border-radius: 10px; border: 1px solid #3f3423;
+            background: #1f1b16; color: #f5f0e6; font-size: 1rem;
+        }
+        input:focus { outline: none; border-color: #c9a84c; }
+        button {
+            padding: 0.8rem 2rem; border: none; border-radius: 10px;
+            background: #c9a84c; color: #0b0a0a; font-weight: bold;
+            cursor: pointer; transition: all 0.3s; font-size: 1rem;
+        }
+        button:hover { background: #dbb55a; }
+        .slots {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem; margin-top: 1rem;
+        }
+        .slot {
+            background: #14110e; border: 1px solid #3f3423;
+            border-radius: 15px; padding: 1rem;
+            display: flex; flex-direction: column;
+        }
+        .slot.occupe { border-color: #c9a84c; }
+        .slot.libre { opacity: 0.5; }
+        .slot h3 { color: #e8d6a8; margin-bottom: 0.5rem; font-size: 1rem; }
+        .slot .pseudo { color: #b8a582; font-size: 0.9rem; margin-bottom: 0.3rem; }
+        .slot .probleme {
+            color: #6a5f4a; font-size: 0.8rem; font-style: italic;
+            margin-bottom: 0.5rem; padding-bottom: 0.5rem;
+            border-bottom: 1px solid #2a241e;
+        }
+        .slot .messages {
+            max-height: 200px; overflow-y: auto;
+            background: #0b0a0a; border-radius: 8px;
+            padding: 0.5rem; margin: 0.5rem 0;
+            font-size: 0.85rem; flex: 1;
+        }
+        .slot .messages::-webkit-scrollbar { width: 4px; }
+        .slot .messages::-webkit-scrollbar-thumb { background: #c9a84c; border-radius: 2px; }
+        .slot .msg { margin-bottom: 0.4rem; line-height: 1.3; }
+        .slot .msg.staff { color: #e8c45a; }
+        .slot .msg.joueur { color: #d6ccbb; }
+        .slot .msg.system { color: #6a5f4a; font-style: italic; text-align: center; }
+        .slot .input-row { display: flex; gap: 0.3rem; margin-bottom: 0.5rem; }
+        .slot .input-row input { flex: 1; margin: 0; padding: 0.5rem; font-size: 0.85rem; }
+        .slot .input-row button { padding: 0.5rem 0.8rem; font-size: 0.85rem; }
+        .slot .close-btn {
+            background: #f44336; color: white; padding: 0.5rem;
+            font-size: 0.85rem; width: 100%; margin-top: auto;
+        }
+        .slot .close-btn:hover { background: #e53935; }
+        .logout {
+            position: fixed; top: 1rem; right: 1rem;
+            padding: 0.5rem 1rem; background: #f44336; color: white;
+            border: none; border-radius: 8px; cursor: pointer; font-size: 0.85rem;
+        }
+        .attente-box {
+            background: #1f1a0f; border: 1px solid #c9a84c;
+            border-radius: 15px; padding: 1rem; margin-top: 1rem;
+        }
+        .attente-box h3 { color: #e8c45a; margin-bottom: 0.5rem; }
+        .attente-box .pseudo { color: #b8a582; font-size: 0.9rem; margin: 0.3rem 0; }
+        .stats { display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .stat {
+            background: #14110e; border: 1px solid #3f3423;
+            border-radius: 10px; padding: 0.5rem 1rem;
+            font-size: 0.9rem; color: #b8a582;
+        }
+        .stat strong { color: #e8c45a; }
+    </style>
+</head>
+<body>
+    <div id="login-view" class="login-box">
+        <h1>🔐 Admin</h1>
+        <p style="color:#b8a582;font-size:0.9rem">Accès réservé au staff</p>
+        <input type="password" id="code" placeholder="Identifiant admin" autocomplete="off">
+        <button onclick="login()">Se connecter</button>
+    </div>
+
+    <div id="admin-view" class="container" style="display:none;">
+        <button class="logout" onclick="logout()">Déconnexion</button>
+        <h1>🎫 Dashboard Support</h1>
+        <div class="stats" id="stats"></div>
+        <div class="slots" id="slots"></div>
+        <div id="attente-container"></div>
+    </div>
+
+    <script type="module">
+        import { db, ref, update, onValue, remove } from './firebase-config.js';
+
+        const ADMINS = [
+            "ADMIN-7F3K9", "ADMIN-2M8P4", "ADMIN-9Q5R1", "ADMIN-4T6V8",
+            "ADMIN-1W3X7", "ADMIN-8Y2Z5", "ADMIN-6A9B3", "ADMIN-3C7D1",
+            "ADMIN-5E8F2", "ADMIN-0G4H6", "ADMIN-2J5K9", "ADMIN-7L1M4",
+            "ADMIN-9N3P8", "ADMIN-4Q6R2", "ADMIN-1S8T5", "ADMIN-6U2V7",
+            "ADMIN-3W9X4", "ADMIN-8Y1Z6", "ADMIN-5A4B2", "ADMIN-0C7D9"
+        ];
+
+        let tickets = {};
+        let adminConnecte = null;
+
+        window.login = function() {
+            const code = document.getElementById('code').value.trim();
+            if (ADMINS.includes(code)) {
+                adminConnecte = code;
+                sessionStorage.setItem('valoria_admin', code);
+                afficherAdmin();
+            } else {
+                alert('❌ Identifiant invalide');
+            }
+        };
+
+        window.logout = function() {
+            sessionStorage.removeItem('valoria_admin');
+            location.reload();
+        };
+
+        function afficherAdmin() {
+            document.getElementById('login-view').style.display = 'none';
+            document.getElementById('admin-view').style.display = 'block';
+
+            onValue(ref(db, 'tickets'), (snapshot) => {
+                tickets = snapshot.val() || {};
+                rendre();
+                promouvoirAttente();
+            });
+        }
+
+        function rendre() {
+            const enCours = Object.entries(tickets).filter(([id, t]) => t.statut === 'en_cours');
+            const enAttente = Object.entries(tickets).filter(([id, t]) => t.statut === 'attente');
+
+            document.getElementById('stats').innerHTML = `
+                <div class="stat">🟢 En cours : <strong>${enCours.length}/5</strong></div>
+                <div class="stat">⏳ En attente : <strong>${enAttente.length}</strong></div>
+                <div class="stat">👤 Admin : <strong>${adminConnecte}</strong></div>
+            `;
+
+            const container = document.getElementById('slots');
+            container.innerHTML = '';
+
+            for (let i = 1; i <= 5; i++) {
+                const entry = Object.entries(tickets).find(([id, t]) => t.slot === i && t.statut === 'en_cours');
+                const div = document.createElement('div');
+
+                if (entry) {
+                    const [id, t] = entry;
+                    div.className = 'slot occupe';
+
+                    const messages = t.messages || {};
+                    const msgArray = Object.values(messages).sort((a, b) => a.timestamp - b.timestamp);
+                    const msgsHtml = msgArray.map(m => {
+                        if (m.role === 'system') return `<div class="msg system">${escapeHtml(m.texte)}</div>`;
+                        return `<div class="msg ${m.role}"><b>${m.role === 'staff' ? 'Staff' : escapeHtml(t.pseudo)} :</b> ${escapeHtml(m.texte)}</div>`;
+                    }).join('') || '<i style="color:#6a5f4a">Aucun message</i>';
+
+                    div.innerHTML = `
+                        <h3>🟢 Slot ${i}</h3>
+                        <div class="pseudo">👤 ${escapeHtml(t.pseudo)}</div>
+                        <div class="probleme">📝 ${escapeHtml(t.probleme)}</div>
+                        <div class="messages">${msgsHtml}</div>
+                        <div class="input-row">
+                            <input type="text" id="input-${id}" placeholder="Répondre..." maxlength="500">
+                            <button onclick="repondre('${id}')">→</button>
+                        </div>
+                        <button class="close-btn" onclick="fermer('${id}')">🔒 Fermer le ticket</button>
+                    `;
+                } else {
+                    div.className = 'slot libre';
+                    div.innerHTML = `<h3>⚪ Slot ${i}</h3><div class="pseudo">Libre</div>`;
+                }
+
+                container.appendChild(div);
+            }
+
+            const attenteContainer = document.getElementById('attente-container');
+            const attenteSorted = enAttente.sort((a, b) => a[1].createdAt - b[1].createdAt);
+            if (attenteSorted.length > 0) {
+                attenteContainer.innerHTML = `
+                    <div class="attente-box">
+                        <h3>⏳ File d'attente (${attenteSorted.length})</h3>
+                        ${attenteSorted.map(([id, t], i) => `<div class="pseudo">N°${i+1} - ${escapeHtml(t.pseudo)} : ${escapeHtml(t.probleme)}</div>`).join('')}
+                    </div>
+                `;
+            } else {
+                attenteContainer.innerHTML = '';
+            }
+        }
+
+        async function promouvoirAttente() {
+            const enCours = Object.entries(tickets).filter(([id, t]) => t.statut === 'en_cours');
+            if (enCours.length >= 5) return;
+
+            const attente = Object.entries(tickets)
+                .filter(([id, t]) => t.statut === 'attente')
+                .sort((a, b) => a[1].createdAt - b[1].createdAt);
+            if (attente.length === 0) return;
+
+            const [id] = attente[0];
+            const utilises = enCours.map(([_, tk]) => tk.slot);
+            for (let i = 1; i <= 5; i++) {
+                if (!utilises.includes(i)) {
+                    await update(ref(db, 'tickets/' + id), { statut: 'en_cours', slot: i });
+                    break;
+                }
+            }
+        }
+
+        window.repondre = async function(ticketId) {
+            const input = document.getElementById('input-' + ticketId);
+            const texte = input.value.trim();
+            if (!texte) return;
+            const timestamp = Date.now();
+            await update(ref(db, `tickets/${ticketId}/messages`), {
+                [timestamp]: { role: 'staff', texte, timestamp }
+            });
+            input.value = '';
+        };
+
+        window.fermer = async function(ticketId) {
+            if (!confirm('Fermer définitivement ce ticket ?')) return;
+
+            const timestamp = Date.now();
+            await update(ref(db, `tickets/${ticketId}/messages`), {
+                [timestamp]: { role: 'system', texte: '🔒 Ticket fermé par le staff.', timestamp }
+            });
+
+            setTimeout(async () => {
+                await remove(ref(db, 'tickets/' + ticketId));
+            }, 2000);
+        };
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        if (sessionStorage.getItem('valoria_admin')) {
+            adminConnecte = sessionStorage.getItem('valoria_admin');
+            afficherAdmin();
+        }
+    </script>
+</body>
+</html>
