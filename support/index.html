@@ -3,36 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ValoriaRP - Support</title>
+    <title>Support - ValoriaRP</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', Roboto, sans-serif; background: #0b0a0a; color: #f5f0e6; padding: 1rem; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-
-        .container {
-            max-width: 600px; width: 100%;
-            background: #14110e; border: 1px solid #3f3423;
-            border-radius: 20px; padding: 2rem;
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: #0b0a0a;
+            color: #f5f0e6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
         }
-        h1 { color: #e8d6a8; margin-bottom: 0.5rem; font-size: 1.5rem; text-align: center; }
-        .subtitle { text-align: center; color: #b8a582; font-size: 0.9rem; margin-bottom: 1.5rem; font-style: italic; }
-
-        label { display: block; color: #e8d6a8; font-size: 0.9rem; margin-bottom: 0.4rem; margin-top: 1rem; }
+        .box {
+            background: #14110e;
+            border: 1px solid #3f3423;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.7);
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h1 { color: #e8d6a8; text-align: center; margin-bottom: 0.5rem; font-size: 1.8rem; }
+        .subtitle { text-align: center; color: #b8a582; margin-bottom: 1.5rem; font-size: 0.95rem; }
+        .info-box {
+            background: #1f1b16;
+            border: 1px solid #3f3423;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .info-box p { color: #b8a582; font-size: 0.9rem; margin: 0.3rem 0; }
+        .info-box .highlight { color: #e8c45a; font-weight: 600; }
         input, textarea {
-            width: 100%; padding: 0.8rem; border-radius: 10px;
-            border: 1px solid #3f3423; background: #1f1b16;
-            color: #6b6258; font-size: 1rem; font-family: inherit;
-            cursor: not-allowed; resize: vertical;
+            width: 100%;
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            border-radius: 10px;
+            border: 1px solid #3f3423;
+            background: #1f1b16;
+            color: #6b6258;
+            font-size: 1rem;
+            font-family: inherit;
+            cursor: not-allowed;
         }
-        textarea { min-height: 120px; }
-
-        #btn {
-            width: 100%; margin-top: 1.5rem;
-            padding: 0.9rem; border: none; border-radius: 10px;
-            background: #3a3a3a; color: #8a8a8a;
-            font-weight: bold; font-size: 1rem;
-            cursor: not-allowed; opacity: 0.7;
+        textarea { resize: vertical; min-height: 120px; }
+        button {
+            width: 100%;
+            padding: 0.9rem;
+            border: none;
+            border-radius: 10px;
+            background: #3a3a3a;
+            color: #8a8a8a;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: not-allowed;
+            margin-top: 0.5rem;
+            opacity: 0.7;
         }
+        .admin-link, .back-link {
+            position: fixed;
+            top: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .admin-link { right: 1rem; color: #7aa8d6; border: 1px solid #7aa8d6; }
+        .admin-link:hover { background: #7aa8d6; color: #0b0a0a; }
+        .back-link { left: 1rem; color: #b8a582; border: 1px solid #3f3423; }
+        .back-link:hover { border-color: #c9a84c; color: #e8c45a; }
+        .footer-note { text-align: center; color: #6a5f4a; font-size: 0.75rem; margin-top: 1rem; }
 
+        /* Notification "Serveur fermé" */
         .notif {
             position: fixed; top: 1rem; left: 1rem;
             background: #2a0f0f; border: 1px solid #a83232;
@@ -68,35 +118,55 @@
 </head>
 <body>
 
+    <!-- Notification Serveur fermé -->
     <div class="notif" id="notif">
         <div class="icone">!</div>
         <div class="contenu">
             <div class="titre">Serveur fermé</div>
             <div class="desc">Les tickets ne sont plus disponibles.</div>
         </div>
-        <button class="fermer" onclick="document.getElementById('notif').style.display='none'">✕</button>
+        <button class="fermer" id="fermerNotif">✕</button>
     </div>
 
-    <div class="container">
+    <a href="../" class="back-link">← Retour au site</a>
+    <a href="admin.html" class="admin-link">🔐 Admin</a>
+
+    <div class="box">
         <h1>🎫 Support ValoriaRP</h1>
-        <p class="subtitle">Ouvre un ticket pour contacter le staff.</p>
+        <p class="subtitle">Un membre du staff vous répondra dès que possible</p>
 
-        <label for="pseudo">👤 Votre pseudo</label>
-        <input type="text" id="pseudo" placeholder="Non disponible..." disabled>
+        <div class="info-box">
+            <p><span class="highlight">📌 Comment ça marche ?</span></p>
+            <p>1️⃣ Entrez votre pseudo</p>
+            <p>2️⃣ Décrivez votre problème</p>
+            <p>3️⃣ Un slot de support s'ouvre pour vous</p>
+            <p>4️⃣ Échangez avec le staff en direct</p>
+        </div>
 
-        <label for="probleme">📝 Votre problème</label>
-        <textarea id="probleme" placeholder="Non disponible..." disabled></textarea>
+        <input type="text" id="pseudo" placeholder="Non disponible..." maxlength="32" disabled>
+        <textarea id="probleme" placeholder="Non disponible..." maxlength="1000" disabled></textarea>
 
         <button id="btn" disabled>Non Disponible</button>
+
+        <p class="footer-note">🔒 Ticket privé · Réponse rapide</p>
     </div>
 
-    <script type="module">
+    <script>
         // ⛔ Serveur fermé — création de tickets désactivée
         console.log('🔒 Serveur fermé — création de tickets désactivée.');
 
-        window.creerTicket = function() {
-            alert('❌ Le serveur est fermé. Les tickets ne sont plus disponibles.');
-        };
+        // Notification : se ferme puis revient 2 secondes après
+        const notif = document.getElementById('notif');
+        const fermerBtn = document.getElementById('fermerNotif');
+
+        if (notif && fermerBtn) {
+            fermerBtn.addEventListener('click', () => {
+                notif.style.display = 'none';
+                setTimeout(() => {
+                    notif.style.display = 'flex';
+                }, 2000);
+            });
+        }
     </script>
 
 </body>
